@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n static form_tags %}
+
+{% block body_class %}text-center{% endblock %}
+
+{% block body %}
+    <main class="container-fluid">
+        <div class="row mt-5">
+            <div class="col-6 offset-3">
+                <div class="row">
+                    <div class="col-6 offset-3 border align-middle p-4" style="box-shadow: 0.5rem .5rem 2rem rgba(0,0,0,.15), -0.5rem -0.5rem 2rem rgba(0,0,0,.15) !important;">
+                        <div class="row border-bottom my-3 py-3">
+                            <div class="col-12 text-center">
+                                <p class="text-center mt-3">{% translate "Assets Management System" %}</p>
+                            </div>
+                        </div>
+                        {% if form.errors and not form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+                            </div>
+                        {% endif %}
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="{{ app_path }}" method="post" autocomplete="off">{% csrf_token %}
+                            <div class="row">
+                                <div class="col-12">
+                                    {{ form.username.errors }}
+                                    {{ form.username.label_tag }} {{ form.username|inject_class:'form-control my-3' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    {{ form.password.errors }}
+                                    {{ form.password.label_tag }} {{ form.password|inject_class:'form-control my-3' }}
+                                </div>
+                            </div>
+                            <div class="row py-3 my-3 border-top">
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-lg btn-primary" type="submit">{% translate 'Log in' %}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

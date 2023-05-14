@@ -1,0 +1,10 @@
+django
+djangorestframework
+django-request
+django-extensions
+black
+pylint
+pylint-django
+scapy
+channels_redis
+channels["daphne"]
