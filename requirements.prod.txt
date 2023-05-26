@@ -1,7 +1,0 @@
-django
-djangorestframework
-django-request
-django-extensions
-scapy
-channels_redis
-channels["daphne"]

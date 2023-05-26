@@ -1,0 +1,12 @@
+django
+djangorestframework
+django-request
+django-extensions
+psycopg2
+black
+pylint
+pylint-django
+scapy
+channels_redis
+gunicorn
+redis
