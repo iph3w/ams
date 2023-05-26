@@ -6,8 +6,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import JSONField
 from django.conf import settings
 from ipaddress import IPv4Network
+
+from .domain import NetworkGraph
 
 # MAX_PORT_RANGE = 65536
 MAX_PORT_RANGE = 1024
@@ -48,9 +51,9 @@ class Discovery(models.Model):
         related_name="discovery_created_by",
         verbose_name=_("Created by")
     )
-    graph = models.TextField(
+    graph = models.JSONField(
         null=True, blank=True, editable=False,
-        verbose_name=_("Graph"),
+        verbose_name=_("Graph")
     )
 
     @property
@@ -66,13 +69,6 @@ class Discovery(models.Model):
             return "N/A"
 
     @property
-    def graph_as_dict(self) -> dict:
-        try:
-            return json.loads(self.graph)
-        except:
-            return {}
-
-    @property
     def max_port(self) -> int:
         return MAX_PORT_RANGE
 
@@ -80,7 +76,7 @@ class Discovery(models.Model):
     def min_port(self) -> int:
         return MIN_PORT_RANGE
 
-    def set_graph(self, graph_data: set):
+    def set_graph(self, graph_data: dict):
         self.graph = graph_data
         self.save()
 
@@ -92,6 +88,12 @@ class Discovery(models.Model):
         self.ended_at = datetime.datetime.now()
         self.graph = graph
         self.save()
+
+    def get_status(self) -> dict:
+        return {
+            "status": {"progress": self.progress},
+            "graph": self.graph
+        }
 
     def __str__(self) -> str:
         return f"{self.ip_range} {self.progress:.2f}%"

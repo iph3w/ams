@@ -1,38 +1,35 @@
-version: '3'
+version: '3.8'
 
 services:
   web:
-    restart: always
-    build: ./web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.prod
+    command: gunicorn web.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
     expose:
-      - "8000"
-    links:
-      - postgres:postgres
-      - redis:redis
-    volumes:
-      - web-static:/usr/src/web_app/static
-    env_file: .env.prod
-    command: /usr/local/bin/gunicorn web_app.wsgi:application -w 2 -b :8000
-
-  nginx:
-    restart: always
-    build: ./nginx/
-    ports:
-      - "80:80"
-    volumes:
-      - web-static:/www/static
-    links:
-      - web:web
-
-  postgres:
-    restart: always
+      - 8000
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
     image: postgres
-    ports:
-      - "5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data/
-    env_file: postgresql/.env.prod
-
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
   redis:
     restart: always
     image: redis
@@ -42,6 +39,7 @@ services:
       - redisdata:/data
 
 volumes:
-  web-static:
-  pgdata:
+  postgres_data:
+  static_volume:
+  media_volume:
   redisdata:

@@ -1,5 +1,5 @@
 """
-URL configuration for web_app project.
+URL configuration for app project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -15,15 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.utils.translation import gettext_lazy as _
 from django.urls import path, include
 
 
 urlpatterns = [
     path('__admin__/', admin.site.urls),
-    path('', include(('web_app.apps.core.urls', 'web_app.apps.core'), namespace='core')),
+    path('', include(('core.urls', 'core'), namespace='core')),
+    path('discovery/', include(('discovery.urls', 'discovery'), namespace='discovery')),
 ]
 
 admin.site.site_header = _("Assets Management System Administration")
 admin.site.site_title = _("Assets Management System")
 admin.site.index_title = _("A.M.S")
+
+
+if settings.DEBUG is True:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

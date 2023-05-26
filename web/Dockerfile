@@ -1,17 +1,30 @@
+# pull official base image
 FROM python:3.11.3-alpine
 
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir -p /app/ams
-RUN mkdir -p /log
-COPY . /app/ams
-WORKDIR /app/ams
+# install psycopg2 dependencies
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 
-RUN apk add --no-cache mariadb-connector-c-dev
-RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient && apk del python3-dev mariadb-dev build-base
-
-RUN apk add netcat-openbsd
-
+# install dependencies
 RUN pip install --upgrade pip
-RUN pip install -r requirements.dev.txt
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 RUN pip install channels["daphne"]
+RUN pip install flake8
+
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# copy project
+COPY . .
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

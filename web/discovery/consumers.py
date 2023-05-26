@@ -1,14 +1,13 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Discovery
-from .domain import NetworkGraph
 
 
 class DiscoveryProgressConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__pk = None
-        self.__instance = None
+        self.__instance: Discovery = None
 
     @property
     def discovery_key(self):
@@ -17,16 +16,13 @@ class DiscoveryProgressConsumer(AsyncWebsocketConsumer):
         return self.__class__.__name__
 
     async def get_data(self):
-        data = {
+        if await Discovery.objects.filter(pk=self.__pk).aexists() is True:
+            self.__instance = await Discovery.objects.aget(pk=self.__pk)
+            return self.__instance.get_status()
+        return {
             "status": {"progress": 0},
             "graph": {}
         }
-
-        if await Discovery.objects.filter(pk=self.__pk).aexists() is True:
-            self.__instance = await Discovery.objects.aget(pk=self.__pk)
-            data["status"]["progress"] = self.__instance.progress
-            data["graph"] = NetworkGraph(gid=self.discovery_key).to_dict()
-        return data
 
     async def connect(self):
         self.__pk = self.scope["url_route"]["kwargs"]["pk"]

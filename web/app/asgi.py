@@ -1,5 +1,5 @@
 """
-ASGI config for web_app project.
+ASGI config for app project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -14,15 +14,15 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
-from web.web_app import apps
+from web.discovery import routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_app.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(apps.discovery.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns))
         ),
     }
 )

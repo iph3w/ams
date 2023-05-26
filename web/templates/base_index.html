@@ -18,7 +18,6 @@
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                     {% if user.is_superuser or user.is_staff %}
                         <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi-person-workspace"></i>{% translate "Admin Panel" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'api:api-root' %}"><i class="bi-code-slash"></i> API</a></li>
                         <li><hr class="dropdown-divider"></li>
                     {% endif %}
                     <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="bi-power" ></i> {% translate "Sign Out" %}</a></li>

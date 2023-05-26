@@ -1,6 +1,10 @@
-__pycache__/
+.idea
+.vscode
+__pycache__
 .pyc
-.ipython/
-.static/
-.idea/
-.vscode/
+.DS_Store
+.ipython
+.venv
+venv
+env
+.cache
