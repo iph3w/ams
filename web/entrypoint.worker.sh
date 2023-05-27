@@ -5,8 +5,6 @@ do
     echo "Waiting for web volume..."
 done
 
-python manage.py makemigrations
-
-python manage.py migrate
+celery -A app worker -l INFO --concurrency 1 -E &
 
 exec "$@"

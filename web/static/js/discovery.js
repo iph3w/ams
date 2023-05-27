@@ -9,7 +9,6 @@
         else {
             wrapper.innerHTML = '<div class="alert alert-danger d-flex align-items-center" role="alert"><svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg><div id="disconnect_alert_text">'+message+'</div></div>';
         }
-        console.log(message);
     }
 
     function setProgress(progress) {
@@ -30,7 +29,7 @@
                 if (nodes[key].opened_ports.length) {
                     innerHTML += nodes[key].opened_ports;
                 } else {
-                    innerHTML += 'No opend ports found.';
+                    innerHTML += 'No opened ports found.';
                 }
                 innerHTML += '</td></tr>';
             }
@@ -40,7 +39,6 @@
     }
 
     function showGraph(graph) {
-        console.log(graph);
         var gnodes = graph.NODES;
         var nodes = [];
         for (var key in gnodes){
@@ -85,9 +83,10 @@
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data).data;
+            console.log(data);
             setProgress(data.status.progress);
-            showGraph(data.graph);
-            setResult(data.graph.NODES);
+            showGraph(JSON.parse(data.graph));
+            setResult(JSON.parse(data.graph).NODES);
             setTimeout(function() {
                 socket.send(null);
             }, 10000);

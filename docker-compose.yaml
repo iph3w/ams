@@ -2,8 +2,13 @@ version: '3.8'
 
 services:
   web:
+    #restart: always
     build: ./web
     command: python manage.py runserver 0.0.0.0:8000
+    entrypoint:
+      - /usr/src/app/entrypoint.sh
+      - /usr/src/app/entrypoint.worker.sh
+      - /usr/src/app/entrypoint.daphne.sh
     volumes:
       - ./web/:/usr/src/app/
     ports:
@@ -16,7 +21,7 @@ services:
   db:
     image: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - ./database:/var/lib/postgresql/data/
     ports:
       - 5432:5432
     environment:
@@ -32,5 +37,4 @@ services:
       - redisdata:/data
 
 volumes:
-  postgres_data:
   redisdata:

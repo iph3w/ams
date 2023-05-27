@@ -1,21 +1,22 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .models import Discovery
 
 
 class DiscoveryProgressConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__pk = None
-        self.__instance: Discovery = None
+        self.__instance = None
 
     @property
     def discovery_key(self):
+        from .models import Discovery
         if isinstance(self.__instance, Discovery):
             return str(self.__instance.uuid)
         return self.__class__.__name__
 
     async def get_data(self):
+        from .models import Discovery
         if await Discovery.objects.filter(pk=self.__pk).aexists() is True:
             self.__instance = await Discovery.objects.aget(pk=self.__pk)
             return self.__instance.get_status()

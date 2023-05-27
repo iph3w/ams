@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'channels', 'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -81,7 +82,6 @@ TEMPLATE_LOADERS = (
 )
 
 WSGI_APPLICATION = 'app.wsgi.application'
-
 
 # Database
 DATABASES = {
@@ -156,7 +156,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(os.environ['REDIS_HOST'], os.environ['REDIS_PORT'])],
         },
     },
 }
@@ -182,6 +182,11 @@ DEFAULT_AGENT_INFO = {
 # django-request
 REQUEST_BASE_URL = "http://127.0.0.1"
 REQUEST_IGNORE_PATHS = (
+    r'^__admin__/',
     r'^__debug__/',
     r'^static/',
 )
+
+# celery broker and result
+CELERY_BROKER_URL = os.environ['CELERY_BROKER']
+CELERY_RESULT_BACKEND = os.environ['CELERY_BACKEND']

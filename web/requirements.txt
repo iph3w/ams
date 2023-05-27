@@ -10,3 +10,4 @@ scapy
 channels_redis
 gunicorn
 redis
+celery

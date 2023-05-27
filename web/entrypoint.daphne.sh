@@ -5,8 +5,6 @@ do
     echo "Waiting for web volume..."
 done
 
-python manage.py makemigrations
-
-python manage.py migrate
+# daphne app.asgi:application &
 
 exec "$@"

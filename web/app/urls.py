@@ -23,8 +23,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('__admin__/', admin.site.urls),
-    path('', include(('core.urls', 'core'), namespace='core')),
     path('discovery/', include(('discovery.urls', 'discovery'), namespace='discovery')),
+    path('', include(('core.urls', 'core'), namespace='core')),
 ]
 
 admin.site.site_header = _("Assets Management System Administration")
