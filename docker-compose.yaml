@@ -8,7 +8,6 @@ services:
     entrypoint:
       - /usr/src/app/entrypoint.sh
       - /usr/src/app/entrypoint.worker.sh
-      - /usr/src/app/entrypoint.daphne.sh
     volumes:
       - ./web/:/usr/src/app/
     ports:
