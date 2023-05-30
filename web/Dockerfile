@@ -28,11 +28,6 @@ COPY entrypoint.worker.sh .
 RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.worker.sh
 RUN chmod +x /usr/src/app/entrypoint.worker.sh
 
-# copy entrypoint.daphne.sh
-COPY entrypoint.daphne.sh .
-RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.daphne.sh
-RUN chmod +x /usr/src/app/entrypoint.daphne.sh
-
 # copy project
 COPY . .
 

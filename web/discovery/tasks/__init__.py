@@ -1,7 +1,8 @@
+import celery
 from app.celery import app
-from .discovery import DiscoveryTask, discovery_task
+from .network_discovery import DiscoveryTask, ScannerTask, network_discovery_task, network_scanner_task
 
 
 __all__ = [
-    'DiscoveryTask', 'discovery_task'
+    'DiscoveryTask', 'ScannerTask', 'network_discovery_task', 'network_scanner_task'
 ]

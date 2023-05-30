@@ -1,5 +1,5 @@
-{% extends '../base_index.html' %}
-{% load i18n static %}
+{% extends 'base_index.html' %}
+{% load i18n static common_tags %}
 
 {% block css %}
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
@@ -44,7 +44,7 @@
                                 <th>{% trans "Firewall" %}</th>
                                 <th>{% trans "Opened Ports" %}</th>
                             </thead>
-                            {% for ip, detail in object.graph_as_dict.NODES.items %}
+                            {% for ip, detail in object.graph|str_to_dict|get_dict_value:"NODES"|dict_items %}
                                 {% if detail %}
                                     <tr>
                                         <th scope="row">{{ forloop.counter }}</td>
@@ -58,7 +58,7 @@
                                         </td>
                                         <td>
                                             {% if detail.opened_ports %}
-                                                <ul>{% for port in detail.opened_ports %}<li>{{ port }}</li>{% endfor %}</ul>
+                                                {{ detail.opened_ports }}
                                             {% else %}
                                                 {% trans "No opend ports found." %}
                                             {% endif %}
@@ -92,7 +92,7 @@
                                 <th>{% trans "Progress" %}</th>
                                 <th>{% trans "Opened Ports" %}</th>
                             </thead>
-                            {% for ip, detail in object.graph_as_dict.NODES.items %}
+                            {% for ip, detail in object.graph|str_to_dict|get_dict_value:"NODES"|dict_items %}
                                 {% if detail %}
                                     <tr>
                                         <th scope="row">{{ forloop.counter }}</td>
@@ -111,7 +111,7 @@
                                         </td>
                                         <td>
                                             {% if detail.opened_ports %}
-                                                <ul>{% for port in detail.opened_ports %}<li>{{ port }}</li>{% endfor %}</ul>
+                                                {{ detail.opened_ports }}
                                             {% else %}
                                                 {% trans "No opend ports found." %}
                                             {% endif %}

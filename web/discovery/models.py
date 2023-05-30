@@ -3,21 +3,18 @@ import uuid
 import datetime
 import json
 import dataclasses
+from abc import abstractmethod
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from ipaddress import IPv4Network
-from .domain import NetworkNode
-
-# MAX_PORT_RANGE = 65536
-MAX_PORT_RANGE = 1024
-MIN_PORT_RANGE = 1
+from .domain import NetworkNode, popular_tcp_ports, popular_udp_ports
 
 NODES_INDEX = "NODES"
 EDGES_INDEX = "EDGES"
 
 
-class Discovery(models.Model):
+class BaseDiscoveryModel(models.Model):
     __nodes: typing.Dict = {}
     __edges: typing.List = []
 
@@ -52,26 +49,6 @@ class Discovery(models.Model):
         verbose_name=_("Graph")
     )
 
-    @property
-    def available_ip_address(self):
-        return [str(ip) for ip in IPv4Network(self.ip_range)]
-
-    @property
-    def ip_range(self) -> str:
-        try:
-            prefixlen = IPv4Network(f"{self.ip_address}/{self.netmask}").prefixlen
-            return f"{self.ip_address}/{prefixlen}"
-        except:
-            return "N/A"
-
-    @property
-    def max_port(self) -> int:
-        return MAX_PORT_RANGE
-
-    @property
-    def min_port(self) -> int:
-        return MIN_PORT_RANGE
-
     def set_graph(self, graph_data: dict):
         self.graph = graph_data
         self.save()
@@ -80,7 +57,7 @@ class Discovery(models.Model):
         self.progress = val
         self.save()
 
-    def finish_discovery(self, graph: str):
+    def finish_discovery(self):
         self.ended_at = datetime.datetime.now()
         self.save()
 
@@ -90,7 +67,7 @@ class Discovery(models.Model):
             "graph": self.graph
         }
 
-    def add_node(self, node: NetworkNode, name: str):
+    def add_node(self, node: NetworkNode | typing.Any, name: str):
         res = False
         if node is not None:
             self.__nodes[name] = dataclasses.asdict(node)
@@ -121,5 +98,51 @@ class Discovery(models.Model):
     def __str__(self) -> str:
         return f"{self.ip_range} {self.progress:.2f}%"
 
+    @property
+    def available_ip_address(self):
+        return [str(ip) for ip in IPv4Network(self.ip_range)]
+
+    @property
+    def ip_range(self) -> str:
+        try:
+            prefix = IPv4Network(f"{self.ip_address}/{self.netmask}").prefixlen
+            return f"{self.ip_address}/{prefix}"
+        except Exception as ex:
+            print(ex)
+            return "N/A"
+
+    @abstractmethod
+    def ports(self) -> typing.Dict:
+        raise NotImplementedError
+
     class Meta:
         ordering = ['-pk']
+        abstract = True
+
+
+class Discovery(BaseDiscoveryModel):
+    def ports(self) -> typing.Dict:
+        return {
+            'TCP': popular_tcp_ports,
+            'UDP': popular_udp_ports
+        }
+
+
+class Scanner(BaseDiscoveryModel):
+    tcp_ports = ArrayField(
+        base_field=models.IntegerField(default=0, blank=True),
+        default=popular_tcp_ports,
+        verbose_name=_("TCP Ports")
+    )
+
+    udp_ports = ArrayField(
+        base_field=models.IntegerField(default=0, blank=True),
+        default=popular_udp_ports,
+        verbose_name=_("UDP Ports")
+    )
+
+    def ports(self) -> typing.Dict:
+        return {
+            'TCP': self.tcp_ports,
+            'UDP': self.udp_ports
+        }

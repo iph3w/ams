@@ -1,16 +1,23 @@
 import copy
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Discovery
-from .tasks import discovery_task
+from .models import Discovery, Scanner
+from .tasks import network_scanner_task, network_discovery_task
 
 
 @receiver(post_save, sender=Discovery, dispatch_uid="run_discovery_task")
 def run_discovery_task(sender, instance: Discovery, created, **kwargs):
     if created:
-        discovery_task.delay(
+        network_discovery_task.delay(
             instance=instance.pk,
-            available_ip_address=copy.deepcopy(instance.available_ip_address),
-            ports=[i for i in range(instance.min_port, instance.max_port + 1)],
+            verbose=True, very_verbose=False
+        )
+
+
+@receiver(post_save, sender=Scanner, dispatch_uid="run_scanner_task")
+def run_scanner_task(sender, instance: Scanner, created, **kwargs):
+    if created:
+        network_scanner_task.delay(
+            instance=instance.pk,
             verbose=True, very_verbose=False
         )
