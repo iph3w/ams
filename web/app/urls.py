@@ -19,10 +19,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.utils.translation import gettext_lazy as _
 from django.urls import path, include
+from rest_framework import routers
+from inventory.views import SystemApiViewSet
 
+router = routers.DefaultRouter()
+router.register(r'agent', SystemApiViewSet, basename='agent-api')
 
 urlpatterns = [
     path('__admin__/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/', include((router.urls, 'api'),  namespace='api-root')),
+    # path('inventory', include(('inventory.urls', 'inventory'), namespace='inventory')),
     path('discovery/', include(('discovery.urls', 'discovery'), namespace='discovery')),
     path('', include(('core.urls', 'core'), namespace='core')),
 ]

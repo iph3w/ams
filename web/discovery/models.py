@@ -127,6 +127,10 @@ class Discovery(BaseDiscoveryModel):
             'UDP': popular_udp_ports
         }
 
+    class Meta:
+        verbose_name = _("Discovery")
+        verbose_name_plural = _("Discoveries")
+
 
 class Scanner(BaseDiscoveryModel):
     tcp_ports = ArrayField(
@@ -146,3 +150,7 @@ class Scanner(BaseDiscoveryModel):
             'TCP': self.tcp_ports,
             'UDP': self.udp_ports
         }
+
+    class Meta:
+        verbose_name = _("Scanner")
+        verbose_name_plural = _("Scanners")
