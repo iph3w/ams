@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'rest_framework', 'request', 'django_extensions',
+    'django_celery_beat',
     'core', 'inventory', 'discovery'
 )
 

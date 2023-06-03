@@ -11,3 +11,4 @@ channels_redis
 gunicorn
 redis
 celery
+django-celery-beat
