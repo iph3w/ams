@@ -39,7 +39,8 @@ Uses gunicorn + nginx.
 
 TODO
 ----
-1. add core custom commands tests
-2. complete discovery application
-3. complete inventory application
+1. Add default discovery and scanner periodic task in discovery application commands.
+2. Test discovery periodic tasks.
+3. Test inventory api through coreapi
+5. Develop agent project for windows 
 
