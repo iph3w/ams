@@ -17,8 +17,8 @@ class PrinterAdmin(admin.ModelAdmin):
         "device_id",
         "is_active",
         "system"
-        ]
-    
+    ]
+
     list_display = [
         "caption",
         "is_network",
@@ -28,8 +28,8 @@ class PrinterAdmin(admin.ModelAdmin):
         "is_shared",
         "shared_name",
         "system__node"
-        ]
-    
+    ]
+
     search_fields = [
         "caption",
         "port_name",
@@ -38,24 +38,24 @@ class PrinterAdmin(admin.ModelAdmin):
         "device_id",
         "system__node"
     ]
-    
+
     list_filter = [
         "is_network",
         "is_local",
         "port_name",
         "is_published",
         "is_shared",
-        ]
-    
+    ]
+
     def system__node(self, obj: Printer):
         if obj.system is not None:
             return obj.system.node
         return 'N/A'
     system__node.short_description = _("System Node")
-    
+
     def has_add_permission(self, request, obj=None):
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False
 

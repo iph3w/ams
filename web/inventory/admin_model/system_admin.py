@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from inventory.models import System
 
-class SystemAdmin(admin.ModelAdmin):  
+
+class SystemAdmin(admin.ModelAdmin):
     readonly_fields = [
         "operating_system_name",
         "operating_system_architecture",
@@ -13,7 +14,7 @@ class SystemAdmin(admin.ModelAdmin):
         "processor",
         "boot_time",
         "motherboard",
-        ]
+    ]
     
     list_display = [
         "node",
@@ -24,9 +25,8 @@ class SystemAdmin(admin.ModelAdmin):
         "motherboard__product",
         "show_memory_capacity",
         "show_disk_capacity"
-        ]
+    ]
 
-    
     search_fields = [
         "operating_system_name",
         "operating_system_architecture",
@@ -45,7 +45,7 @@ class SystemAdmin(admin.ModelAdmin):
         "processor",
         "motherboard__manufacturer",
         "motherboard__product",
-        ]
+    ]
     
     def show_memory_capacity(self, obj: System):
         return f"{obj.memory_capacity() / 1_000_000_000} GB"

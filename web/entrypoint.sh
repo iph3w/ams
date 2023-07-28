@@ -9,4 +9,8 @@ python manage.py makemigrations
 
 python manage.py migrate
 
+flake8 --ignore=E501,W293
+
+python manage.py test
+
 exec "$@"

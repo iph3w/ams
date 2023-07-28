@@ -11,7 +11,7 @@ class DeviceTypeAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "show_devices",
-        ]
+    ]
 
     search_fields = [
         "name",
@@ -47,7 +47,7 @@ class DeviceAdmin(admin.ModelAdmin):
         "user",
         "is_healthy",
         "ipv4_address"
-        ]
+    ]
 
     search_fields = [
         "name",
@@ -62,6 +62,6 @@ class DeviceAdmin(admin.ModelAdmin):
         "device_type__name",
         "manufacturer",
         "is_healthy",
-        ]
+    ]
 
     autocomplete_fields = ["device_type"]

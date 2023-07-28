@@ -7,8 +7,9 @@ register = template.Library()
 
 @register.filter
 def get_dict_value(dictionary: dict, key: str) -> typing.Any:
-    if key in dictionary.keys():
-        return dictionary[key]
+    if isinstance(dictionary, dict) is True:
+        if key in dictionary.keys():
+            return dictionary[key]
     return ''
 
 
@@ -39,3 +40,8 @@ def str_to_dict_items(dictionary: str) -> dict:
     if dictionary is None or dictionary == '':
         return {}
     return json.loads(dictionary).items()
+
+
+@register.filter
+def percentage(data):
+    return f'{data:.2f}'

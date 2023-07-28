@@ -4,9 +4,10 @@ import datetime
 import json
 import dataclasses
 from abc import abstractmethod
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import JSONField, ArrayField
+from django.contrib.postgres.fields import ArrayField
 from ipaddress import IPv4Network
 from .domain import NetworkNode, popular_tcp_ports, popular_udp_ports
 
@@ -47,6 +48,13 @@ class BaseDiscoveryModel(models.Model):
     graph = models.JSONField(
         null=True, blank=True, editable=False,
         verbose_name=_("Graph")
+    )
+    start_automatically = models.BooleanField(
+        default=False, verbose_name=_("Start Automatically")
+    )
+    created_by = models.ForeignKey(
+        to=User, null=True, blank=True, on_delete=models.SET_NULL,
+        verbose_name=_("Created By")
     )
 
     def set_graph(self, graph_data: dict):
@@ -123,8 +131,8 @@ class BaseDiscoveryModel(models.Model):
 class Discovery(BaseDiscoveryModel):
     def ports(self) -> typing.Dict:
         return {
-            'TCP': popular_tcp_ports,
-            'UDP': popular_udp_ports
+            'TCP': popular_tcp_ports(),
+            'UDP': popular_udp_ports()
         }
 
     class Meta:
@@ -135,13 +143,13 @@ class Discovery(BaseDiscoveryModel):
 class Scanner(BaseDiscoveryModel):
     tcp_ports = ArrayField(
         base_field=models.IntegerField(default=0, blank=True),
-        default=popular_tcp_ports,
+        default=popular_tcp_ports(),
         verbose_name=_("TCP Ports")
     )
 
     udp_ports = ArrayField(
         base_field=models.IntegerField(default=0, blank=True),
-        default=popular_udp_ports,
+        default=popular_udp_ports(),
         verbose_name=_("UDP Ports")
     )
 

@@ -9,7 +9,7 @@ import copy
 
 from enum import Enum, unique
 from warnings import filterwarnings
-from scapy.all import traceroute, RandShort, sr, sr1, IP, TCP, ICMP, get_if_addr, conf, UDP
+from scapy.all import traceroute, RandShort, sr, sr1, IP, TCP, ICMP, get_if_addr, conf
 from discovery.domain import NetworkNode
 from discovery.models import Discovery, Scanner
 
@@ -46,10 +46,7 @@ class NetworkDiscoveryTask:
             else:
                 self.__counter += 1
             res = float(
-                self.__counter / (
-                        len(self.__instance.available_ip_address) *
-                        len(self.__instance.ports()['TCP'])
-                )
+                self.__counter / (len(self.__instance.available_ip_address) * len(self.__instance.ports()['TCP']))
             ) * 100
         return res
 
@@ -188,8 +185,9 @@ class NetworkDiscoveryTask:
         if self.__scanner_ip not in self.__available_ip_address:
             print(self.__scanner_ip)
             self.__instance.add_node(None, self.__scanner_ip)
+        # TODO: Switch to asyncio solution
         thread_pool: typing.List[threading.Thread] = []
-        for _ in range(MAX_THREAD_WORKER):
+        for _ in range(min(MAX_THREAD_WORKER, len(self.__available_ip_address))):
             thread = threading.Thread(target=self.scanner)
             thread.start()
             thread_pool.append(thread)

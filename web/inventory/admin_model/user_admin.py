@@ -14,7 +14,7 @@ class UserAdmin(admin.ModelAdmin):
         "password_expires",
         "started_datetime",
         "system"
-        ]
+    ]
     
     list_display = [
         "username",
@@ -25,7 +25,7 @@ class UserAdmin(admin.ModelAdmin):
         "password_expires",
         "started_datetime",
         "system__node"
-        ]
+    ]
     
     search_fields = [
         "username",
@@ -38,7 +38,7 @@ class UserAdmin(admin.ModelAdmin):
         "password_changeable",
         "password_requires",
         "password_expires",
-        ]
+    ]
     
     def system__node(self, obj: User):
         if obj.system is not None:

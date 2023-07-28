@@ -1,10 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "admin/change_form.html" %}
+{% load i18n static common_tags %}
+
+{% block extrahead %}{{ block.super }}
+{% endblock %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+    {% if original %}
+        <div id="alertPlaceHolder"></div>
+        <progress id="progress" value="{{ original.progress }}" max="100" style="width: 100%; height: 20px; background-color: white;"></progress>
+        <div style="width: 100%; height: auto;" >
+            <div id="networkGraph" width="100%" height="auto"></div>
+        </div>
+        <div style="width: 100%;">
+            <table id="discovery_result" style="width: 100%;">
+                <thead style="background-color: black; color: white; font-size: larger;">
+                    <th>#</th>
+                    <th>{% trans "IP" %}</th>
+                    <th>{% trans "Firewall" %}</th>
+                    <th>{% trans "Opened Ports" %}</th>
+                </thead>
+                {% for ip, detail in original.graph|str_to_dict|get_dict_value:"NODES"|dict_items %}
+                    {% if detail %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</td>
+                            <td>{{ ip }}</td>
+                            <td>
+                                {% if detail.firewall_detected %}
+                                    <img src="{% static "admin/img/icon-yes.svg" %}" alt="True">
+                                {% else %}
+                                    <img src="{% static "admin/img/icon-no.svg" %}" alt="False">
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if detail.opened_ports %}
+                                    {{ detail.opened_ports }}
+                                {% else %}
+                                    {% trans "No opend ports found." %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/highcharts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/networkgraph.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/exporting.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/export-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/accessibility.min.js"></script>
+    {% if original.ended_at %}
+    <script>
+        {% autoescape off %}
+        var graph =  {{ original.graph }};
+        {% endautoescape %}
+        var gnodes = graph.NODES;
+        var nodes = [];
+        for (var key in gnodes){
+            if (gnodes[key] != null){
+                nodes.push({
+                    id: key,
+                    dataLabels: {
+                        enabled: true
+                    },
+                    marker: {
+                        fillColor: gnodes[key].firewall_detected ? 'green' : '#1aadce'
+                    }
+                });
+            }
+        }
+        Highcharts.chart('networkGraph', {
+            chart: {
+                type: 'networkgraph',
+                plotBorderWidth: 1
+            },
+            title: {
+                text: 'Network Graph',
+            },
+            series: [{
+                nodes: nodes,
+                data: graph.EDGES
+            }]
+        });
+    </script>
+    {% else %}
+        <script src="{% static 'js/discovery.admin.js' %}"></script>
+    {% endif %}
+{% endblock %}

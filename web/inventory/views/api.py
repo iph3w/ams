@@ -1,5 +1,4 @@
-from django.db.models import QuerySet
-from rest_framework import viewsets, permissions, generics, response, mixins, status
+from rest_framework import viewsets, permissions, response, mixins, status
 from inventory.models import System
 from inventory.models.motherboard import Motherboard
 
@@ -8,7 +7,8 @@ from inventory.serializers import SystemSerializer
 
 class SystemApiViewSet(
     mixins.CreateModelMixin,
-    viewsets.GenericViewSet):
+    viewsets.GenericViewSet
+):
     """SystemApiViewSet
     This API is provided to for each agent.
     The agent will be able to add its information to central server through this api.

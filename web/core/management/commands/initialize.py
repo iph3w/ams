@@ -37,7 +37,7 @@ class Command(BaseCommand):
             )
             default_admin_user.save()
             self.stdout.write(self.style.SUCCESS("default admin user created"))
-        
+
         if Command._reset_user(user_info=settings.DEFAULT_AGENT_INFO, is_superuser=False) is True:
             self.stdout.write(self.style.SUCCESS("default agent user information reset"))
         else:

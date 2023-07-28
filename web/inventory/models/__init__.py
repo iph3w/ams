@@ -3,7 +3,7 @@
 from .hard_disk import DiskDrive, DiskPartition
 from .memory import Memory
 from .motherboard import Motherboard
-from .network_interface import NetworkInterface,IPV4
+from .network_interface import NetworkInterface, IPV4
 from .printer import Printer, PrinterDriver
 from .software import InstalledSoftware
 from .system import System
