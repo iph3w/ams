@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.conf import settings
 
 
-class DiscoveryTaskTestCase(TestCase):
+class InitializeCommandTestCase(TestCase):
     def call_command(self):
         out = StringIO()
 
