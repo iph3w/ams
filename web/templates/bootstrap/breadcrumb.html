@@ -1,0 +1,7 @@
+{% load i18n static %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+        {% if subtitle %}<li class="breadcrumb-item active" aria-current="page">{{ subtitle }}</li>{% endif %}
+    </ol>
+</nav>

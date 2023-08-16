@@ -1,0 +1,14 @@
+{% load i18n static form_tags %}
+{% form_errors form %}
+<div class="card-text">
+    <div class="row my-1">
+        {% field form.ip_address %}
+        {% field form.netmask %}
+    </div>
+    <div class="row my-1">
+        {% field form.tcp_ports %}
+    </div>
+    <div class="row my-1">
+        {% field form.udp_ports %}
+    </div>
+</div>

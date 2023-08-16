@@ -1,0 +1,9 @@
+{% load i18n static %}
+{% spaceless %}
+    {% if form.errors and not form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">{% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}</div>
+    {% endif %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+    {% endif %}
+{% endspaceless %}

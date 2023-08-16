@@ -1,0 +1,23 @@
+{% load i18n static %}
+{% spaceless %}
+<button type="button" class="rounded-0 btn btn-{{ type }}" data-bs-toggle="modal" data-bs-target="#{{ id }}">{{ title }}</button>
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ id }}_label" aria-hidden="true" {% if is_static %}data-bs-backdrop="static" data-bs-keyboard="false"{% endif %}>
+    {% if modal_button %}<form method="POST" enctype="multipart/form-data">{% csrf_token %}{% endif %}
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable {{ model_size }} {% if fullscreen %}modal-fullscreen{% endif %}">
+        <div class="modal-content rounded-0">
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ id }}_label">{{ title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">{% include template %}</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="rounded-0 btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                {% if modal_button %}<button type="submit" class="rounded-0 btn btn-primary">{{ modal_button }}</button>{% endif %}
+            </div>
+        </div>
+    </div>
+    {% if modal_button %}</form>{% endif %}
+</div>
+{% endspaceless %}

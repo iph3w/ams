@@ -1,0 +1,8 @@
+{% load i18n static %}
+{% spaceless %}
+<div class="col">
+    {{ field.label_tag }}{{ widget }}
+    {% if field.errors %}<div class="invalid-feedback">{{ field.errors|safe }}</div>{% endif %}
+    {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+</div>
+{% endspaceless %}

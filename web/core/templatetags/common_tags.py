@@ -1,5 +1,6 @@
 import json
 import typing
+
 from django import template
 
 register = template.Library()
@@ -26,13 +27,15 @@ def get_str_dict_value(dictionary: str, key: str) -> typing.Any:
 @register.filter
 def str_to_dict(dictionary: str) -> dict:
     if dictionary is None or dictionary == '':
-        return ''
+        return {}
     return json.loads(dictionary)
 
 
 @register.filter
 def dict_items(dictionary: dict) -> typing.Any:
-    return dictionary.items()
+    if isinstance(dictionary, dict) is True:
+        return dictionary.items()
+    return []
 
 
 @register.filter

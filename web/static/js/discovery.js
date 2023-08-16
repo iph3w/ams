@@ -12,20 +12,24 @@
     }
 
     function setProgress(progress) {
-        document.querySelector('#progress_bar').setAttribute("aria-valuenow", progress);
+        if (progress > 100) {
+            document.querySelector('#progress_bar').setAttribute("class", "bg-warning");
+            progress = 100;
+        }
+        document.querySelector('#progress_bar').setAttribute("value", progress);
         document.querySelector('#progress_bar').style.width = progress + '%';
     }
 
     function setResult(nodes) {
-        var innerHTML = '<thead class="table-dark"><th>#</th><th>IP</th><th>Firewall</th><th>Progress</th><th>Opened Ports</th></thead>';
+        var innerHTML = '<thead><th>#</th><th>IP</th><th>Firewall</th><th>Progress</th><th>Opened Ports</th></thead>';
         var i = 1;
         for (var key in nodes){
             if (nodes[key] != null){
                 innerHTML += '<tr><th scope="row">'+i+'</td><td>'+key+'</td><td>';
                 innerHTML += nodes[key].firewall_detected == true ? '<i class="bi-check text-success"></i>' : '<i class="bi-x text-danger"></i>'
-                innerHTML += '</td><td><div class="progress">';
-                innerHTML += nodes[key].progress == 100 ? '<div class="progress-bar bg-success" role="progressbar" aria-valuenow="'+nodes[key].progress+'%" style="width: '+nodes[key].progress+'%;" aria-valuemin="0" aria-valuemax="100"></div>' : '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="'+nodes[key].progress+'%" style="width: '+nodes[key].progress+'%;" aria-valuemin="0" aria-valuemax="100"></div>';
-                innerHTML += '</div></td><td>';
+                innerHTML += '</td><td><progress value="'+nodes[key].progress+'" max="100" style="width: 100%; height: 10px;" class="';
+                innerHTML += nodes[key].progress == 100 ? 'bg-success' : 'bg-secondary';
+                innerHTML += '"></progress></td><td>';
                 if (nodes[key].opened_ports.length) {
                     innerHTML += nodes[key].opened_ports;
                 } else {

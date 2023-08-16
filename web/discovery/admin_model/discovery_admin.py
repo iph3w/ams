@@ -25,7 +25,7 @@ class DiscoveryAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ("ip_address", "netmask", "start_automatically")
+            'fields': ("ip_address", "netmask", "start_automatically", "crontab")
         }),
         ('Details', {
             'fields': ("created_at", "ended_at")

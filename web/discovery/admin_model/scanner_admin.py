@@ -28,7 +28,8 @@ class ScannerAdmin(admin.ModelAdmin):
             'fields': (
                 "ip_address", "netmask",
                 "tcp_ports", "udp_ports",
-                "start_automatically"
+                "start_automatically",
+                "crontab"
             )
         }),
         ('Details', {

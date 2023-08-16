@@ -4,12 +4,13 @@ import datetime
 import json
 import dataclasses
 from abc import abstractmethod
+from ipaddress import IPv4Network
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import ArrayField
-from ipaddress import IPv4Network
-from .domain import NetworkNode, popular_tcp_ports, popular_udp_ports
+from django_celery_beat.models import CrontabSchedule
+
+from discovery.domain import NetworkNode
 
 NODES_INDEX = "NODES"
 EDGES_INDEX = "EDGES"
@@ -55,6 +56,13 @@ class BaseDiscoveryModel(models.Model):
     created_by = models.ForeignKey(
         to=User, null=True, blank=True, on_delete=models.SET_NULL,
         verbose_name=_("Created By")
+    )
+
+    crontab = models.ForeignKey(
+        CrontabSchedule, on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name=_('Crontab Schedule'),
+        help_text=_('Crontab Schedule to run the task on.  '
+                    'Set only one schedule type, leave the others null.'),
     )
 
     def set_graph(self, graph_data: dict):
@@ -127,38 +135,17 @@ class BaseDiscoveryModel(models.Model):
         ordering = ['-pk']
         abstract = True
 
-
-class Discovery(BaseDiscoveryModel):
-    def ports(self) -> typing.Dict:
-        return {
-            'TCP': popular_tcp_ports(),
-            'UDP': popular_udp_ports()
-        }
-
-    class Meta:
-        verbose_name = _("Discovery")
-        verbose_name_plural = _("Discoveries")
-
-
-class Scanner(BaseDiscoveryModel):
-    tcp_ports = ArrayField(
-        base_field=models.IntegerField(default=0, blank=True),
-        default=popular_tcp_ports(),
-        verbose_name=_("TCP Ports")
+"""
+crontab = models.ForeignKey(
+        CrontabSchedule, on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name=_('Crontab Schedule'),
+        help_text=_('Crontab Schedule to run the task on.  '
+                    'Set only one schedule type, leave the others null.'),
     )
-
-    udp_ports = ArrayField(
-        base_field=models.IntegerField(default=0, blank=True),
-        default=popular_udp_ports(),
-        verbose_name=_("UDP Ports")
+ models.ForeignKey(
+        CrontabSchedule, on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name=_('Crontab Schedule'),
+        help_text=_('Crontab Schedule to run the task on.  '
+                    'Set only one schedule type, leave the others null.'),
     )
-
-    def ports(self) -> typing.Dict:
-        return {
-            'TCP': self.tcp_ports,
-            'UDP': self.udp_ports
-        }
-
-    class Meta:
-        verbose_name = _("Scanner")
-        verbose_name_plural = _("Scanners")
+"""
