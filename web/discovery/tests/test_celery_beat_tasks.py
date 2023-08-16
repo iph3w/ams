@@ -3,7 +3,7 @@ import fcntl
 import struct
 import json
 from django.test import TestCase
-from django_celery_beat.models import PeriodicTask, PeriodicTasks, IntervalSchedule
+from django_celery_beat.models import PeriodicTask, PeriodicTasks, CrontabSchedule
 from celery.contrib.testing.worker import start_worker
 
 from discovery.models import Discovery, Scanner
@@ -30,19 +30,15 @@ class NetworkDiscoveryScheduledTaskTestCase(TestCase):
     def test_scheduled_network_discovery_task(self):
         ip_address_info = get_ip_address_info()
         number_of_tasks = 0
-        schedule, _ = IntervalSchedule.objects.get_or_create(every=10, period=IntervalSchedule.MINUTES)
+        crontab, _ = CrontabSchedule.objects.get_or_create(
+            minute="0", hour="*", day_of_week="*", day_of_month="10-15", month_of_year="*"
+        )
         for ip, netmask in ip_address_info.items():
-            PeriodicTask.objects.create(
-                interval=schedule,
-                name='test_celery_beat_tasks',
-                task='app.discovery.tasks.network_discovery_task',
-                kwargs=json.dumps({
-                    'instance': Discovery.objects.create(
-                        ip_address=ip,
-                        netmask=netmask,
-                        start_automatically=False
-                    ).pk
-                })
+            Discovery.objects.create(
+                ip_address=ip,
+                netmask=netmask,
+                start_automatically=False,
+                crontab=crontab
             )
             number_of_tasks += 1
 
@@ -53,19 +49,15 @@ class NetworkScannerScheduledTaskTestCase(TestCase):
     def test_scheduled_network_scanner_task(self):
         ip_address_info = get_ip_address_info()
         number_of_tasks = 0
-        schedule, _ = IntervalSchedule.objects.get_or_create(every=10, period=IntervalSchedule.MINUTES)
+        crontab, _ = CrontabSchedule.objects.get_or_create(
+            minute="0", hour="*", day_of_week="*", day_of_month="10-15", month_of_year="*"
+        )
         for ip, netmask in ip_address_info.items():
-            PeriodicTask.objects.create(
-                interval=schedule,
-                name='test_celery_beat_tasks',
-                task='app.discovery.tasks.network_scanner_task',
-                kwargs=json.dumps({
-                    'instance': Scanner.objects.create(
-                        ip_address=ip,
-                        netmask=netmask,
-                        start_automatically=False
-                    ).pk
-                })
+            Scanner.objects.create(
+                ip_address=ip,
+                netmask=netmask,
+                start_automatically=False,
+                crontab=crontab
             )
             number_of_tasks += 1
 
