@@ -57,7 +57,7 @@ class BaseDiscoveryModel(models.Model):
     )
 
     nodes = models.JSONField(
-        null=True, blank=True, editable=False, default=dict(),
+        null=True, blank=True, editable=False, default=dict,
         verbose_name=_("Nodes")
     )
 
@@ -65,8 +65,8 @@ class BaseDiscoveryModel(models.Model):
         ArrayField(
             models.CharField(null=True, blank=True, editable=False, default=''),
             size=2,
-            default=list()
-        ), default=list(),
+            default=list
+        ), default=list,
         verbose_name=_("Edges")
     )
 

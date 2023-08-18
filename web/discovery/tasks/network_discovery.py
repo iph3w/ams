@@ -20,9 +20,9 @@ def network_discovery_subtask(*args, **kwargs):
     pk = kwargs.pop('instance', 0)
     target = kwargs.pop('target', '')
     if not Discovery.objects.filter(pk=pk).exists():
-        raise RuntimeError(f"Wrong parameter for network scanner primary key: {pk}")
+        raise ValueError(f"Wrong parameter for network scanner primary key: {pk}")
     if target is None or target == '':
-        raise RuntimeError(f"Wrong parameter for network scanner target: {target}")
+        raise ValueError(f"Wrong parameter for network scanner target: {target}")
     instance = Discovery.objects.get(pk=pk)
     nmap = NetworkMapper(
         pk=pk, model=Discovery,
@@ -45,7 +45,7 @@ def network_discovery_task(self, *args, **kwargs):
     pk = kwargs.pop('instance', 0)
     scanner_ip = get_if_addr(conf.iface)
     if not Discovery.objects.filter(pk=pk).exists():
-        raise Exception(f"Wrong parameter for network discovery primary key: {pk}")
+        raise ValueError(f"Wrong parameter for network discovery primary key: {pk}")
     instance = Discovery.objects.get(pk=pk)
     if scanner_ip not in instance.available_ip_address:
         Discovery.add_node(pk=instance.pk, _model=Discovery, node={}, name=scanner_ip)
@@ -69,9 +69,9 @@ def network_scanner_subtask(*args, **kwargs):
     pk = kwargs.pop('instance', 0)
     target = kwargs.pop('target', '')
     if not Scanner.objects.filter(pk=pk).exists():
-        raise Exception(f"Wrong parameter for network scanner primary key: {pk}")
+        raise ValueError(f"Wrong parameter for network scanner primary key: {pk}")
     if target is None or target == '':
-        raise RuntimeError(f"Wrong parameter for network scanner target: {target}")
+        raise ValueError(f"Wrong parameter for network scanner target: {target}")
     instance = Scanner.objects.get(pk=pk)
     nmap = NetworkMapper(
         pk=pk, model=Scanner,
@@ -94,7 +94,7 @@ def network_scanner_task(self, *args, **kwargs):
     pk = kwargs.pop('instance', 0)
     scanner_ip = get_if_addr(conf.iface)
     if not Scanner.objects.filter(pk=pk).exists():
-        raise RuntimeError(f"Wrong parameter for network scanner primary key: {pk}")
+        raise ValueError(f"Wrong parameter for network scanner primary key: {pk}")
     instance = Scanner.objects.get(pk=pk)
     if scanner_ip not in instance.available_ip_address:
         Scanner.add_node(pk=instance.pk, _model=Scanner, node={}, name=scanner_ip)

@@ -32,18 +32,31 @@ class NetworkTaskTestCase(Utility, TestCase):
         Discovery.objects.all().delete()
         Scanner.objects.all().delete()
 
-    def test_network_task_raises_runtime_error(self):
+    def test_network_task_raises_value_error(self):
         self.assertTrue(Discovery.objects.all())
-        self.assertRaises(
-            Exception,
-            network_discovery_task.delay(
+
+        with self.assertRaises(ValueError):
+            network_discovery_subtask.delay(
+                target='192.168.1.1',
+                instance=Discovery.objects.aggregate(Max('pk'))['pk__max'] + 1
+            ).get()
+
+        with self.assertRaises(ValueError):
+            network_discovery_subtask.delay(
+                target='',
                 instance=Discovery.objects.aggregate(Max('pk'))['pk__max']
-            )
-        )
+            ).get()
+
         self.assertTrue(Scanner.objects.all())
-        self.assertRaises(
-            Exception,
-            network_scanner_task.delay(
+
+        with self.assertRaises(ValueError):
+            network_scanner_subtask.delay(
+                target='',
                 instance=Scanner.objects.aggregate(Max('pk'))['pk__max']
-            )
-        )
+            ).get()
+
+        with self.assertRaises(ValueError):
+            network_scanner_subtask.delay(
+                target='192.168.1.1',
+                instance=Scanner.objects.aggregate(Max('pk'))['pk__max'] + 1
+            ).get()

@@ -9,13 +9,13 @@ from .base import BaseDiscoveryModel
 class Scanner(BaseDiscoveryModel):
     tcp_ports = ArrayField(
         base_field=models.IntegerField(default=0, blank=True),
-        default=popular_tcp_ports(),
+        default=popular_tcp_ports,
         verbose_name=_("TCP Ports")
     )
 
     udp_ports = ArrayField(
         base_field=models.IntegerField(default=0, blank=True),
-        default=popular_udp_ports(),
+        default=popular_udp_ports,
         verbose_name=_("UDP Ports")
     )
 
