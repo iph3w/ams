@@ -30,7 +30,7 @@
                 innerHTML += '</td><td><progress value="'+nodes[key].progress+'" max="100" style="width: 100%; height: 10px;" class="';
                 innerHTML += nodes[key].progress == 100 ? 'bg-success' : 'bg-secondary';
                 innerHTML += '"></progress></td><td>';
-                if (nodes[key].opened_ports.length) {
+                if (nodes[key].opened_ports) {
                     innerHTML += nodes[key].opened_ports;
                 } else {
                     innerHTML += 'No opened ports found.';
@@ -87,10 +87,9 @@
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data).data;
-            console.log(data);
             setProgress(data.status.progress);
-            showGraph(JSON.parse(data.graph));
-            setResult(JSON.parse(data.graph).NODES);
+            showGraph(data.graph);
+            setResult(data.graph.NODES);
             setTimeout(function() {
                 socket.send(null);
             }, 10000);

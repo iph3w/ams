@@ -164,19 +164,19 @@ CHANNEL_LAYERS = {
 
 
 DEFAULT_ADMIN_INFO = {
-    'USERNAME': 'admin',
+    'USERNAME': os.environ['DEFAULT_ADMIN_USERNAME'],
     'FIRST_NAME': 'Default',
     'LAST_NAME': 'System Administrator',
-    'EMAIL': '',
-    'PASSWORD': 'admin'
+    'EMAIL': os.environ['DEFAULT_ADMIN_EMAIL'],
+    'PASSWORD': os.environ['DEFAULT_ADMIN_PASSWORD']
 }
 
 DEFAULT_AGENT_INFO = {
-    'USERNAME': 'agent',
+    'USERNAME': os.environ['DEFAULT_AGENT_USERNAME'],
     'FIRST_NAME': 'Default',
     'LAST_NAME': 'Agent',
     'EMAIL': '',
-    'PASSWORD': '@gent2022'
+    'PASSWORD': os.environ['DEFAULT_AGENT_PASSWORD']
 }
 
 

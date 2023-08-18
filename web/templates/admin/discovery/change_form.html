@@ -20,7 +20,7 @@
                     <th>{% trans "Firewall" %}</th>
                     <th>{% trans "Opened Ports" %}</th>
                 </thead>
-                {% for ip, detail in original.graph|str_to_dict|get_dict_value:"NODES"|dict_items %}
+                {% for ip, detail in object.nodes|dict_items %}
                     {% if detail %}
                         <tr>
                             <th scope="row">{{ forloop.counter }}</td>

@@ -1,25 +1,20 @@
 import typing
 import uuid
 import datetime
-import json
-import dataclasses
 from abc import abstractmethod
 from ipaddress import IPv4Network
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 from django_celery_beat.models import CrontabSchedule
 
-from discovery.domain import NetworkNode
 
 NODES_INDEX = "NODES"
 EDGES_INDEX = "EDGES"
 
 
 class BaseDiscoveryModel(models.Model):
-    __nodes: typing.Dict = {}
-    __edges: typing.List = []
-
     ip_address = models.GenericIPAddressField(
         blank=False, null=False,
         default='0.0.0.0', verbose_name=_("IP Address")
@@ -46,10 +41,6 @@ class BaseDiscoveryModel(models.Model):
         blank=True, null=True, editable=False,
         verbose_name="Ended at"
     )
-    graph = models.JSONField(
-        null=True, blank=True, editable=False,
-        verbose_name=_("Graph")
-    )
     start_automatically = models.BooleanField(
         default=False, verbose_name=_("Start Automatically")
     )
@@ -65,13 +56,26 @@ class BaseDiscoveryModel(models.Model):
                     'Set only one schedule type, leave the others null.'),
     )
 
-    def set_graph(self, graph_data: dict):
-        self.graph = graph_data
-        self.save()
+    nodes = models.JSONField(
+        null=True, blank=True, editable=False, default=dict(),
+        verbose_name=_("Nodes")
+    )
 
-    def set_progress(self, val):
-        self.progress = val
-        self.save()
+    edges = ArrayField(
+        ArrayField(
+            models.CharField(null=True, blank=True, editable=False, default=''),
+            size=2,
+            default=list()
+        ), default=list(),
+        verbose_name=_("Edges")
+    )
+
+    @staticmethod
+    @transaction.atomic()
+    def set_progress(pk: int, _model, val):
+        instance = _model.objects.get(pk=pk)
+        instance.progress = val
+        instance.save()
 
     def finish_discovery(self):
         self.ended_at = datetime.datetime.now()
@@ -83,33 +87,40 @@ class BaseDiscoveryModel(models.Model):
             "graph": self.graph
         }
 
-    def add_node(self, node: NetworkNode | typing.Any, name: str):
+    @property
+    def graph(self) -> typing.Dict:
+        return {NODES_INDEX: self.nodes, EDGES_INDEX: self.edges}
+
+    @staticmethod
+    @transaction.atomic
+    def add_node(pk: int, _model, node: dict, name: str):
+        instance = _model.objects.get(pk=pk)
         res = False
-        if node is not None:
-            self.__nodes[name] = dataclasses.asdict(node)
+        if node is not None and len(node.keys()) > 0:
+            instance.nodes[name] = node
             res = True
         else:
-            if name not in self.__nodes.keys():
-                self.__nodes[name] = None
+            if name not in instance.nodes.keys():
+                instance.nodes[name] = {}
                 res = True
         if res is True:
-            self.graph = json.dumps(self.to_dict())
-            self.save()
+            instance.save()
 
-    def add_edge(self, node1: str, node2: str):
-        if (node1, node2) not in self.__edges:
-            self.__edges.append((node1, node2))
-            self.graph = json.dumps(self.to_dict())
-            self.save()
+    @staticmethod
+    @transaction.atomic
+    def add_edge(pk: int, _model, node1: str, node2: str):
+        instance = _model.objects.get(pk=pk)
+        if [node1, node2] not in instance.edges:
+            instance.edges.append([node1, node2])
+            instance.save()
 
-    def remove_node(self, name: str):
-        if name in self.__nodes.keys():
-            del self.__nodes[name]
-            self.graph = json.dumps(self.to_dict())
-            self.save()
-
-    def to_dict(self) -> typing.Dict:
-        return {NODES_INDEX: self.__nodes, EDGES_INDEX: self.__edges}
+    @staticmethod
+    @transaction.atomic
+    def remove_node(pk: int, _model, name: str):
+        instance = _model.objects.get(pk=pk)
+        if name in instance.nodes.keys():
+            instance.nodes.pop(name)
+            instance.save()
 
     def __str__(self) -> str:
         return f"{self.ip_range} {self.progress:.2f}%"
@@ -134,18 +145,3 @@ class BaseDiscoveryModel(models.Model):
     class Meta:
         ordering = ['-pk']
         abstract = True
-
-"""
-crontab = models.ForeignKey(
-        CrontabSchedule, on_delete=models.CASCADE, null=True, blank=True,
-        verbose_name=_('Crontab Schedule'),
-        help_text=_('Crontab Schedule to run the task on.  '
-                    'Set only one schedule type, leave the others null.'),
-    )
- models.ForeignKey(
-        CrontabSchedule, on_delete=models.CASCADE, null=True, blank=True,
-        verbose_name=_('Crontab Schedule'),
-        help_text=_('Crontab Schedule to run the task on.  '
-                    'Set only one schedule type, leave the others null.'),
-    )
-"""

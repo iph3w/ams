@@ -11,6 +11,9 @@ python manage.py migrate
 
 flake8 --ignore=E501,W293
 
-python manage.py test
+coverage erase
+coverage run manage.py test
+coverage report
+coverage html -d coverage
 
 exec "$@"
