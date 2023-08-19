@@ -72,10 +72,12 @@ class BaseDiscoveryModel(models.Model):
 
     @staticmethod
     @transaction.atomic()
-    def set_progress(pk: int, _model, val):
+    def set_progress(pk: int, _model, name: str):
         instance = _model.objects.get(pk=pk)
-        instance.progress = val
-        instance.save()
+        if name in instance.nodes.keys():
+            if 'progress' in instance.nodes[name].keys():
+                instance.nodes[name]['progress'] = len(instance.ports()['TCP'])
+                instance.save()
 
     def finish_discovery(self):
         self.ended_at = datetime.datetime.now()
@@ -104,6 +106,14 @@ class BaseDiscoveryModel(models.Model):
                 instance.nodes[name] = {}
                 res = True
         if res is True:
+            progress = 0
+            for _, n in instance.nodes.items():
+                if 'progress' in n.keys():
+                    print(_ + ' -> ' + str(n['progress']))
+                    progress += (n['progress'] / 100) * len(instance.ports()['TCP'])
+            print(progress)
+            instance.progress = (progress / (len(instance.available_ip_address) * len(instance.ports()['TCP']))) * 100
+            print(instance.progress)
             instance.save()
 
     @staticmethod

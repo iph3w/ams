@@ -17,7 +17,6 @@
             progress = 100;
         }
         document.querySelector('#progress_bar').setAttribute("value", progress);
-        document.querySelector('#progress_bar').style.width = progress + '%';
     }
 
     function setResult(nodes) {

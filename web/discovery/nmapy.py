@@ -30,9 +30,7 @@ class NetworkMapper:
     __scanner_ip: str = get_if_addr(conf.iface)
     __verbose: bool = False
     __model: Discovery | Scanner = None
-    __counter: int = 0
     __ports: list
-    __all_ip_address: int = 1
     __target: str
     __node: NetworkNode
 
@@ -43,16 +41,6 @@ class NetworkMapper:
         self.__all_ip_address = all_ip_address
         self.__target = target
         self.__node = NetworkNode()
-
-    @property
-    def progress(self) -> float:
-        return float(
-            self.__counter / (self.__all_ip_address * len(self.__ports))
-        ) * 100
-
-    @progress.setter
-    def progress(self, step: float):
-        self.__counter += step
 
     def ping(self):
         try:
@@ -67,10 +55,15 @@ class NetworkMapper:
             return False
 
     def traceroute(self) -> list:
-        conf.checkIPsrc = 0
-        ans, _ = traceroute(self.__target, dport=443, verbose=self.__verbose)
-        return list(dict.fromkeys(
-            [self.__scanner_ip] + [x[0] for x in list(list(ans.get_trace().values())[0].values())] + [self.__target]))
+        try:
+            conf.checkIPsrc = 0
+            ans, _ = traceroute(self.__target, dport=443, verbose=self.__verbose)
+            return list(dict.fromkeys(
+                [self.__scanner_ip] + [x[0] for x in list(list(ans.get_trace().values())[0].values())] + [self.__target]))
+        except Exception as ex:
+            logging.warning(
+                "%s > %s > %s", __file__, self.__class__.__name__, inspect.stack()[0][3], extra=ex.__traceback__
+            )
 
     def __send_tcp_flag__(self, port: int, flags: str):
         result = sr1(
@@ -141,13 +134,12 @@ class NetworkMapper:
     def __add_edge__(self, node1: str, node2: str):
         self.__model.add_edge(pk=self.__pk, _model=self.__model, node1=node1, node2=node2)
 
-    def __set_progress__(self):
-        self.__model.set_progress(pk=self.__pk, _model=self.__model, val=self.progress)
+    def __progress__(self, name: str):
+        self.__model.set_progress(pk=self.__pk, _model=self.__model, name=name)
 
     def start(self):
         if self.ping() in (False, None):
             self.__remove_node__()
-            self.progress = len(self.__ports)
             return False
         for idx, port in enumerate(self.__ports):
             self.__node.port = port
@@ -159,7 +151,6 @@ class NetworkMapper:
             if status == PortStatus.OPENED:
                 self.__node.opened_ports.append(port)
                 self.__add_node__(node=dataclasses.asdict(self.__node), name=self.__target)
-                self.__set_progress__()
             elif status == PortStatus.FILTERED:
                 pass
                 # node.filtered_ports.append(port)
@@ -174,6 +165,5 @@ class NetworkMapper:
                 if last_hop != "":
                     self.__add_edge__(node1=last_hop, node2=hop)
                 last_hop = hop
-        self.progress = len(self.__ports)
-        self.__set_progress__()
+        self.__progress__(name=self.__target)
         return True

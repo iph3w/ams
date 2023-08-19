@@ -1,3 +1,5 @@
+import datetime
+
 import celery
 
 from scapy.all import get_if_addr, conf
@@ -52,9 +54,10 @@ def network_discovery_task(self, *args, **kwargs):
     result = group(
         [(network_discovery_subtask.s(target=ip, instance=pk)) for ip in instance.available_ip_address]
     ).apply_async()
+
     result.get(disable_sync_subtasks=False, propagate=False)
 
-    Discovery.objects.filter(pk=pk).update(progress=100)
+    Discovery.objects.filter(pk=pk).update(progress=100, ended_at=datetime.datetime.now())
 
 
 @celery.current_app.task(
@@ -101,7 +104,8 @@ def network_scanner_task(self, *args, **kwargs):
     result = group(
         [(network_scanner_subtask.s(target=ip, instance=pk)) for ip in instance.available_ip_address]
     ).apply_async()
+
     result.get(disable_sync_subtasks=False, propagate=False)
 
-    Scanner.objects.filter(pk=pk).update(progress=100)
+    Scanner.objects.filter(pk=pk).update(progress=100, ended_at=datetime.datetime.now())
 

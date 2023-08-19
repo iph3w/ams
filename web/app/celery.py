@@ -17,4 +17,7 @@ app = AppCelery("app")
 
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
+app.conf.task_acks_late = True
+app.conf.task_reject_on_worker_lost = True
+
 app.autodiscover_tasks([a for a in settings.INSTALLED_APPS])

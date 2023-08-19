@@ -33,7 +33,7 @@ services:
     #restart: always
     build: ./web
     container_name: celery
-    command: celery -A app worker -l INFO --concurrency 3 -E  -Q DiscoveryQueue,ScannerQueue,Queue
+    command: celery -A app worker -l INFO --concurrency 3 -E -Q DiscoveryQueue,ScannerQueue,Queue
     volumes:
       - ./web/:/usr/src/app/
     env_file:
