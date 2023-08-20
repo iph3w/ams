@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static bootstrap5_tags %}
 {% spaceless %}
 <button type="button" class="rounded-0 btn btn-{{ type }}" data-bs-toggle="modal" data-bs-target="#{{ id }}">{{ title }}</button>
 <div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ id }}_label" aria-hidden="true" {% if is_static %}data-bs-backdrop="static" data-bs-keyboard="false"{% endif %}>
@@ -14,7 +14,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="rounded-0 btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
-                {% if modal_button %}<button type="submit" class="rounded-0 btn btn-primary">{{ modal_button }}</button>{% endif %}
+                {% if modal_button %}{% submit_button title=modal_button %}{% endif %}
             </div>
         </div>
     </div>

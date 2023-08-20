@@ -4,7 +4,7 @@ LABEL maintainer="Mohammad Mehdi Abbaspour <mm.abbaspour@gmail.com>"
 
 RUN apt-get update
 
-RUN apt-get install python3 python3-pip postgresql-dev gcc python3-dev musl-dev
+RUN apt-get install python3 python3-pip postgresql-dev gcc python3-dev musl-dev curl
 
 RUN pip3 install virtualenv
 

@@ -1,9 +1,9 @@
-{% load i18n static %}
+{% load i18n static bootstrap5_tags %}
 {% spaceless %}
     {% if form.errors and not form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">{% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}</div>
+        {% if form.errors.items|length == 1 %}{% alert alert_type="danger" text="Please correct the error below." %}{% else %}{% alert alert_type="danger" text="Please correct the errors below." %}{% endif %}
     {% endif %}
     {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+        {% for error in form.non_field_errors %}{% alert alert_type="danger" text=error %}{% endfor %}
     {% endif %}
 {% endspaceless %}

@@ -8,7 +8,6 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     entrypoint:
       - /usr/src/app/entrypoint.sh
-      - /usr/src/app/entrypoint.worker.sh
     volumes:
       - ./web/:/usr/src/app/
     ports:
@@ -19,7 +18,8 @@ services:
       - redis
       - db
       - rabbitmq
-      - celery
+      - celery_worker
+      - celery_beat
 
   flower:
     image: mher/flower
@@ -29,11 +29,25 @@ services:
     env_file:
       - ./.env.flower.dev
 
-  celery:
+  celery_worker:
     #restart: always
     build: ./web
-    container_name: celery
+    container_name: celery_worker
     command: celery -A app worker -l INFO --concurrency 3 -E -Q DiscoveryQueue,ScannerQueue,Queue
+    volumes:
+      - ./web/:/usr/src/app/
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - redis
+      - db
+      - rabbitmq
+
+  celery_beat:
+    #restart: always
+    build: ./web
+    container_name: celery_beat
+    command: celery -A app beat -l INFO -S django
     volumes:
       - ./web/:/usr/src/app/
     env_file:
@@ -59,8 +73,6 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    volumes:
-      - redisdata:/data
 
   rabbitmq:
     image: rabbitmq:management
@@ -68,9 +80,3 @@ services:
     ports:
       - 5672:5672
       - 8002:15672
-    volumes:
-      - rabbitmqdata:/var/lib/rabbitmq
-
-volumes:
-  redisdata:
-  rabbitmqdata:

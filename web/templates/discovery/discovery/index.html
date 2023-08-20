@@ -1,12 +1,12 @@
 {% extends 'base_index.html' %}
-{% load i18n static form_tags %}
+{% load i18n static bootstrap5_tags %}
 
 {% block css %}
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block toolbar %}
-    {% if perms.discovery.add_discovery %}{% modal button_type="-sm btn-outline-secondary" title="Start Discovery" modal_template=modal_template modal_button="Submit" is_static=1 %}{% endif %}
+    {% if perms.discovery.add_discovery %}{% modal button_type="-sm btn-primary" title="Start Discovery" modal_template=modal_template modal_button="Submit" is_static=1 %}{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,28 +15,33 @@
         <div class="col-12">
             <div class="card rounded-0">
                 <div class="card-body table-responsive border-0">
-                    <table class="table table-striped table-hover table-sm">
-                        <thead class="">
-                            <th>#</th>
-                            <th>{% trans "IP Range" %}</th>
-                            <th>{% trans "Created at" %}</th>
-                            <th>{% trans "Created by" %}</th>
-                            <th>{% trans "Progress" %}</th>
-                            <th>{% trans "Ended at" %}</th>
-                            <th>{% trans "More" %}</th>
-                        </thead>
-                        {% for object in object_list %}
-                            <tr>
-                                <th scope="row">{{ forloop.counter }}</td>
-                                <td>{{ object.ip_range }}</td>
-                                <td>{{ object.created_at }}</td>
-                                <td>{{ object.created_by.get_full_name }}</td>
-                                <td>{% progress value=object.progress %}</td>
-                                <td>{{ object.ended_at }}</td>
-                                <td><a class="link-primary" href="{% url 'discovery:discovery-details' pk=object.pk %}"><i class="bi bi-three-dots"></i></a></td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    {% if object_list %}
+                        <table class="table table-striped table-hover table-sm">
+                            <thead class="">
+                                <th>#</th>
+                                <th>{% trans "IP Range" %}</th>
+                                <th>{% trans "Created at" %}</th>
+                                <th>{% trans "Created by" %}</th>
+                                <th>{% trans "Progress" %}</th>
+                                <th>{% trans "Ended at" %}</th>
+                                <th>{% trans "More" %}</th>
+                            </thead>
+                            {% for object in object_list %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</td>
+                                    <td>{{ object.ip_range }}</td>
+                                    <td>{{ object.created_at }}</td>
+                                    <td>{{ object.created_by.get_full_name }}</td>
+                                    <td>{% progress value=object.progress %}</td>
+                                    <td>{{ object.ended_at }}</td>
+                                    <td><a class="link-primary" href="{% url 'discovery:discovery-details' pk=object.pk %}"><i class="bi bi-three-dots"></i></a></td>
+                                </tr>
+                            {% endfor %}
+                            <tfoot><th colspan="7">{% pagination page_obj=page_obj %}</th></tfoot>
+                        </table>
+                    {% else %}
+                        {% alert text="Discovery list is empty" alert_type="secondary" %}
+                    {% endif %}
                 </div>
             </div>
         </div>

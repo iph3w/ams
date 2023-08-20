@@ -9,8 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 dependencies
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
-# apk add tcpdump libpcap0.8-dev
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev tcpdump libpcap
 
 # install dependencies
 RUN pip install --upgrade pip
@@ -23,11 +22,6 @@ RUN pip install flake8
 COPY ./entrypoint.sh .
 RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
-
-# copy entrypoint.worker.sh
-COPY entrypoint.worker.sh .
-RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.worker.sh
-RUN chmod +x /usr/src/app/entrypoint.worker.sh
 
 # copy project
 COPY . .

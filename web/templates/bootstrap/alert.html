@@ -1,0 +1,11 @@
+{% load i18n static %}
+<div class="alert alert-{{ alert_type }} d-flex align-items-center {% if dismissible %}alert-dismissible fade show{% endif %} rounded-0" role="alert">
+    {% if header %}
+        <h4 class="alert-heading">{% if icon %}<i class="bi bi-{{ icon }}" style="font-size: 26px;"></i>{% endif %} {{ header }}</h4>
+        {% if dismissible %}  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{% endif %}
+    {% else %}
+        {% if icon %}<i class="bi bi-{{ icon }}" style="font-size: 20px;"></i>{% endif %}
+    {% endif %}
+    {{ text }}
+    {% if dismissible %}  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{% endif %}
+</div>

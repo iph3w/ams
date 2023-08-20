@@ -4,7 +4,7 @@ import typing
 
 @dataclasses.dataclass
 class NetworkNode:
-    firewall_detected: bool = False
+    firewall_detected: int = 0
     opened_ports: typing.List[int] = dataclasses.field(default_factory=list)
     filtered_ports: typing.List[int] = dataclasses.field(default_factory=list)
     closed_ports: typing.List[int] = dataclasses.field(default_factory=list)

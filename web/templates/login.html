@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static form_tags %}
+{% load i18n static bootstrap5_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -16,32 +16,23 @@
                                 <p class="text-center mt-3">{% translate "Assets Management System" %}</p>
                             </div>
                         </div>
-                        {% if form.errors and not form.non_field_errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
-                            </div>
-                        {% endif %}
-                        {% if form.non_field_errors %}
-                            {% for error in form.non_field_errors %}
-                                <div class="alert alert-danger" role="alert">{{ error }}</div>
-                            {% endfor %}
-                        {% endif %}
+                        {% form_errors form %}
                         <form action="{{ app_path }}" method="post" autocomplete="off">{% csrf_token %}
                             <div class="row">
                                 <div class="col-12">
                                     {{ form.username.errors }}
-                                    {{ form.username.label_tag }} {{ form.username|inject_class:'form-control my-3' }}
+                                    {{ form.username.label_tag }} {{ form.username|inject_class:'form-control my-3 rounded-0' }}
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
                                     {{ form.password.errors }}
-                                    {{ form.password.label_tag }} {{ form.password|inject_class:'form-control my-3' }}
+                                    {{ form.password.label_tag }} {{ form.password|inject_class:'form-control my-3 rounded-0' }}
                                 </div>
                             </div>
                             <div class="row py-3 my-3 border-top">
                                 <div class="col-12">
-                                    <button class="w-100 btn btn-lg btn-primary" type="submit">{% translate 'Log in' %}</button>
+                                    {% submit_button css_class="w-100 btn-lg" title="Log in" %}
                                 </div>
                             </div>
                         </form>

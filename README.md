@@ -39,8 +39,8 @@ Uses gunicorn + nginx.
 
 TODO
 ----
-1. Add default discovery and scanner periodic task in discovery application commands.
-2. Test discovery periodic tasks.
+1. Separate Celery Beat Worker from Django application.
+2. Fix problem with tracerout and libpcap.
 3. Test inventory api through coreapi
-5. Develop agent project for windows 
+4. Develop agent project for windows 
 

@@ -72,6 +72,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'core.templatetags.bootstrap5_tags',
+                'core.templatetags.common_tags'
+            ]
         },
     },
 ]
@@ -191,3 +195,15 @@ REQUEST_IGNORE_PATHS = (
 # celery broker and result
 CELERY_BROKER_URL = os.environ['CELERY_BROKER']
 CELERY_RESULT_BACKEND = os.environ['CELERY_BACKEND']
+
+
+AMS_MENU = {
+    'discovery': {
+        'icon': 'search',
+        'models': ['discovery', 'scanner']
+    },
+    'inventory': {
+        'icon': 'list',
+        'models': []
+    }
+}

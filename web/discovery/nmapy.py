@@ -87,8 +87,8 @@ class NetworkMapper:
             ), timeout=10, verbose=self.__verbose
         )
         if str(type(result)) == "<type 'NoneType'>" or result is None:
-            return True
-        return False
+            return 1
+        return 0
 
     def __is_icmp_error__(self, packet) -> bool:
         if packet.haslayer(ICMP):
@@ -112,7 +112,7 @@ class NetworkMapper:
         return port_status
 
     def tcp_port_scan(self, port) -> tuple:
-        firewall_detected: bool = False
+        firewall_detected: int = 0
         port_status: PortStatus = PortStatus.FILTERED
         scan_resp = self.__send_tcp_flag__(port, "A")
         if scan_resp is not None and scan_resp.haslayer(TCP):
@@ -122,7 +122,7 @@ class NetworkMapper:
                 elif scan_resp.getlayer(TCP).window > 0:
                     port_status = PortStatus.OPENED
         elif scan_resp is not None and self.__is_icmp_error__(scan_resp) is True:
-            firewall_detected = True
+            firewall_detected = 1
         return firewall_detected, port_status
 
     def __remove_node__(self):
@@ -144,9 +144,9 @@ class NetworkMapper:
         for idx, port in enumerate(self.__ports):
             self.__node.port = port
             status = self.tcp_stealth_scan(port)
-            if status in (PortStatus.CLOSED, PortStatus.FILTERED) and self.__node.firewall_detected is False:
+            if status in (PortStatus.CLOSED, PortStatus.FILTERED) and self.__node.firewall_detected == 0:
                 self.__node.firewall_detected, status = self.tcp_port_scan(port)
-                if self.__node.firewall_detected is False:
+                if self.__node.firewall_detected == 0:
                     self.__node.firewall_detected = self.firewall_detection(port)
             if status == PortStatus.OPENED:
                 self.__node.opened_ports.append(port)

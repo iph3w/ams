@@ -71,7 +71,7 @@ def floating_field(field):
     takes_context=False
 )
 def field(field):
-    css_class = "form-control"
+    css_class = "form-control rounded-0"
     if field.field.widget.__class__.__name__ in (
         Select().__class__.__name__,
         SelectMultiple().__class__.__name__
@@ -157,4 +157,28 @@ def breadcrumb(title, subtitle=None):
     return {
         'title': title,
         'subtitle': subtitle
+    }
+
+
+@register.inclusion_tag(
+    "bootstrap/pagination.html",
+    takes_context=False
+)
+def pagination(page_obj):
+    return {
+        'page_obj': page_obj
+    }
+
+
+@register.inclusion_tag(
+    "bootstrap/alert.html",
+    takes_context=False
+)
+def alert(text: str, alert_type: str = 'primary', icon: str = '', header: str = '', dismissible: int = 0):
+    return {
+        'text': text,
+        'alert_type': alert_type,
+        'icon': icon,
+        'header': header,
+        'dismissible': dismissible
     }

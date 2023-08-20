@@ -1,25 +1,23 @@
 {% extends 'base.html' %}
-{% load i18n static form_tags %}
+{% load i18n static bootstrap5_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <header class="navbar navbar-dark navbar-expand-lg sticky-top bg-primary flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/">{% translate "Assets Management System" %}</a>
+    <header class="navbar navbar-dark bg-primary bg-gradient navbar-expand-lg sticky-top flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 bg-primary bg-gradient text-center" href="/">{% trans 'Assets Management System' %}</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <form class="w-100 me-3" role="search">
-            <input class="form-control form-control-light w-100 rounded-0 border-0" type="text" placeholder="{% translate 'Search' %}" aria-label="Search">
-        </form>
-        <ul class="navbar-nav justify-content-end">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="javascript:;" rol="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle"></i> {{ user.username|capfirst }}
+        <div class="w-100 me-3 ms-3"></div>
+        <ul class="navbar-nav justify-content-end me-3">
+            <li class="nav-item dropdown ">
+                <a class="nav-link dropdown-toggle" href="javascript:;" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle text-light" style="font-size:26px;"></i>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end " style="border-radius: 0;">
                     {% if user.is_superuser or user.is_staff %}
-                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-check-fill "></i> {% translate "Admin Panel" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear "></i> {% translate "Admin Panel" %}</a></li>
                         <li><hr class="dropdown-divider"></li>
                     {% endif %}
                     {% if user.is_superuser %}
@@ -34,30 +32,24 @@
     </header>
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3 sidebar-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">
-                                <i class="bi-speedometer"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi-list-stars"></i> Inventory
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'discovery:discovery-index' %}">
-                                <i class="bi-search"></i> Discovery
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'discovery:scanner-index' %}">
-                                <i class="bi-search"></i> Scanner
-                            </a>
-                        </li>
-                    </ul>
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar bg-light">
+                <div class="position-sticky pt-3 sidebar-sticky accordion accordion-flush p-1" id="accordionMenu">
+                    {% for app, info in menu.items %}
+                        <div class="accordion-item">
+                            <h4 class="accordion-header" id="menu{{ forloop.counter }}">
+                                <a class="btn bnt-link bg-light accordion-button {% if app != app_name %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                    <i class="bi bi-{{ info.icon }} {% if app == app_name %}text-primary{% endif %}"></i> <span class="{% if app == app_name %}text-primary{% endif %}">{{ info.title }}</span>
+                                </a>
+                            </h4>
+                            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse bg-light {% if app == app_name %}show{% endif %}" aria-labelledby="menu{{ forloop.counter }}" data-bs-parent="#accordionMenu">
+                                <ul class="nav flex-column accordion-body bg-light">
+                                    {% for key, menu_item in info.menu_items.items %}
+                                        <li class="nav-item bg-light"><a class="nav-link {% if key == model_name %}active{% endif %}" aria-current="page" href="{% url menu_item.link %}">{{ menu_item.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </nav>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">

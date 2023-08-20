@@ -17,6 +17,9 @@
             progress = 100;
         }
         document.querySelector('#progress_bar').setAttribute("value", progress);
+        if (progress === 100) {
+            window.location.reload();
+        }
     }
 
     function setResult(nodes) {
@@ -25,9 +28,9 @@
         for (var key in nodes){
             if (nodes[key] != null){
                 innerHTML += '<tr><th scope="row">'+i+'</td><td>'+key+'</td><td>';
-                innerHTML += nodes[key].firewall_detected == true ? '<i class="bi-check text-success"></i>' : '<i class="bi-x text-danger"></i>'
+                innerHTML += nodes[key].firewall_detected === 1 ? '<i class="bi-check text-success"></i>' : '<i class="bi-x text-danger"></i>'
                 innerHTML += '</td><td><progress value="'+nodes[key].progress+'" max="100" style="width: 100%; height: 10px;" class="';
-                innerHTML += nodes[key].progress == 100 ? 'bg-success' : 'bg-secondary';
+                innerHTML += nodes[key].progress === 100 ? 'bg-success' : 'bg-secondary';
                 innerHTML += '"></progress></td><td>';
                 if (nodes[key].opened_ports) {
                     innerHTML += nodes[key].opened_ports;

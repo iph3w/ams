@@ -1,5 +1,5 @@
 {% extends 'base_index.html' %}
-{% load i18n static %}
+{% load i18n static bootstrap5_tags %}
 
 
 {% block content %}
@@ -11,18 +11,7 @@
                 </div>
             </div>
         </div>
-        <div>
-            {% if form.errors and not form.non_field_errors %}
-                <div class="alert alert-danger" role="alert">
-                    {% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
-                </div>
-            {% endif %}
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <div class="alert alert-danger" role="alert">{{ error }}</div>
-                {% endfor %}
-            {% endif %}
-        </div>
+        <div>{% form_errors form %}</div>
         <div class="row">
             <form method="POST" enctype="multipart/form-data">
     
@@ -31,8 +20,7 @@
             
                 <!-- Using the formset -->
                 {{ form.as_p }}
-                
-                <input type="submit" value="Submit">
+                {% submit_button title="Submit" %}
             </form>
             <div class="col-5">
 

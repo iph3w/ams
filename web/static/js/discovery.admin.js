@@ -21,7 +21,7 @@
         for (var key in nodes){
             if (nodes[key] != null){
                 innerHTML += '<tr><th scope="row">'+i+'</td><td>'+key+'</td><td>';
-                innerHTML += nodes[key].firewall_detected == true ? 'Y' : 'N'
+                innerHTML += nodes[key].firewall_detected == 1 ? 'Y' : 'N'
                 innerHTML += '</td><td><div class="progress">';
                 innerHTML += '<progress value="'+nodes[key].progress+'" max="100" style="width: 100%; background-color: white;"></progress>';
                 innerHTML += '</div></td><td>';
